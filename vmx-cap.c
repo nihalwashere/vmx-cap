@@ -116,6 +116,51 @@ struct capability_info entrycontrols[13] =
 };
 
 /*
+ * Secondary Procbased controls
+ */
+struct capability_info secondary_procbased[27] =
+{
+	{ 0, "Virtualize APIC accesses" },	
+    { 1, "Enable EPT" },	
+    { 2, "Descriptor Table Exiting" },	
+    { 3, "Enable RDTSCP" },	
+    { 4, "Virtualize x2APIC Mode" },	
+    { 5, "Enable VPID" },	
+    { 6, "WBINVD Exiting" },	
+    { 7, "Unrestricted Guest" },	
+    { 8, "APIC-register Virtualization" },	
+    { 9, "Virtual-interrupt Delivery" },	
+    { 10, "PAUSE-loop Exiting" },	
+    { 11, "RDRAND exiting" },	
+    { 12, "Enable INVPCID" },
+    { 13, "Enable VM Functions" },
+    { 14, "VMCS Shadowing" },
+    { 15, "Enable ENCLS Exiting" },
+    { 16, "RDSEED Exiting" },
+    { 17, "Enable PML" },
+    { 18, "EPT-violation #VE" },
+    { 19, "Conceal VMX from PT" },
+    { 20, "Enable XSAVES/XRSTORS" },
+    { 22, "Mode-based Execute Control for EPT" },
+    { 23, "Sub-page Write Permissions for EPT" },
+    { 24, "Intel PT Uses Guest Physical Addresses" },
+    { 25, "Use TSC Scaling" },
+    { 26, "Enable User Wait and Pause" },
+    { 28, "Enable ENCLV Exiting" }
+};
+
+/*
+ * Tertiary Procbased controls
+ */
+struct capability_info tertiary_procbased[4] =
+{
+	{ 0, "LOADIWKEY Exiting" },	
+    { 1, "Enable HLAT" },
+    { 2, "EPT Paging-write Control" },
+    { 3, "Guest-paging Verification" }
+};
+
+/*
  * report_capability
  *
  * Reports capabilities present in 'cap' using the corresponding MSR values
@@ -161,24 +206,48 @@ detect_vmx_features(void)
 	pr_info("Pinbased Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(pinbased, 5, lo, hi);
+    pr_info("\n");
 
 	/* Procbased controls */
 	rdmsr(IA32_VMX_PROCBASED_CTLS, lo, hi);
 	pr_info("Procbased Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(procbased, 22, lo, hi);
+    pr_info("\n");    
+
+    if((hi >> 31) && 1)
+    {
+        /* Secondary Procbased controls */
+        rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
+        pr_info("Secondary Procbased Controls MSR: 0x%llx\n",
+            (uint64_t)(lo | (uint64_t)hi << 32));
+        report_capability(secondary_procbased, 27, lo, hi);
+        pr_info("\n");
+    }
+
+    if((hi >> 17) && 1)
+    {
+        /* Tertiary Procbased controls */
+        rdmsr(IA32_VMX_PROCBASED_CTLS3, lo, hi);
+        pr_info("Tertiary Procbased Controls MSR: 0x%llx\n",
+            (uint64_t)(lo | (uint64_t)hi << 32));
+        report_capability(tertiary_procbased, 4, lo, hi);
+        pr_info("\n");
+    }
 
     /* Exit controls */
 	rdmsr(IA32_VMX_EXIT_CTLS, lo, hi);
 	pr_info("Exit Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(exitcontrols, 16, lo, hi);
+    pr_info("\n");
 
     /* Entry controls */
 	rdmsr(IA32_VMX_ENTRY_CTLS, lo, hi);
 	pr_info("Entry Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(entrycontrols, 13, lo, hi);
+    pr_info("\n");
 }
 
 /*
