@@ -96,6 +96,26 @@ struct capability_info exitcontrols[16] =
 };
 
 /*
+ * Entry controls
+ */
+struct capability_info entrycontrols[13] =
+{
+	{ 2, "Load Debug Controls" },	
+    { 9, "IA-32e Mode Guest" },	
+    { 10, "Entry to SMM" },	
+    { 11, "Deactivate Dual Monitor Treatment" },	
+    { 13, "Load IA32_PERF_GLOBAL_CTRL" },	
+    { 14, "Load IA32_PAT" },	
+    { 15, "Load IA32_EFER" },	
+    { 16, "Load IA32_BNDCFGS" },	
+    { 17, "Conceal VMX from PT" },	
+    { 18, "Load IA32_RTIT_CTL" },	
+    { 20, "Load CET State" },	
+    { 21, "Load Guest IA32_LBR_CTL" },	
+    { 22, "Load PKRS" }    
+};
+
+/*
  * report_capability
  *
  * Reports capabilities present in 'cap' using the corresponding MSR values
@@ -153,6 +173,12 @@ detect_vmx_features(void)
 	pr_info("Exit Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(exitcontrols, 16, lo, hi);
+
+    /* Entry controls */
+	rdmsr(IA32_VMX_ENTRY_CTLS, lo, hi);
+	pr_info("Entry Controls MSR: 0x%llx\n",
+		(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(entrycontrols, 13, lo, hi);
 }
 
 /*
