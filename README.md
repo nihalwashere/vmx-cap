@@ -8,7 +8,11 @@ Setup Google Cloud CLI on your local machine to manage your compute engine resou
 
 `gcloud compute instances create YOUR_INSTANCE_NAME --enable-nested-virtualization --min-cpu-platform="Intel Haswell"`
 
-Replace "YOUR_INSTANCE_NAME" with the name of your instance, in the above command we are not specifying the zone since in our case the zone was configured and set to "us-west1-b" while installing Google Cloud CLI. We are enabling nested virtualization by adding the flag "--enable-nested-virtualization" and the CPU platform is set to "Intel Haswell".
+Replace "YOUR_INSTANCE_NAME" with the name of your instance.
+
+In the above command we are not specifying the zone since in our case the zone was configured and set to "us-west1-b" while installing Google Cloud CLI.
+
+We are enabling nested virtualization by adding the flag "--enable-nested-virtualization" and the CPU platform is set to "Intel Haswell".
 
 ### SSH into your instance
 
@@ -158,6 +162,6 @@ You can remove the module from the Linux kernel using the below command,
 
 ### Clean
 
-Remove all the executables created by the "make" command, you can run
+To remove all the executables and clean your project use the below command,
 
 `make clean`
