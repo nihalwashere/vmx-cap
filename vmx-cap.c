@@ -200,6 +200,8 @@ void
 detect_vmx_features(void)
 {
 	uint32_t lo, hi;
+    bool canSetSecondaryProcBasedControls = false;
+    bool canSetTertiaryProcBasedControls = false;
 
 	/* Pinbased controls */
 	rdmsr(IA32_VMX_PINBASED_CTLS, lo, hi);
@@ -215,7 +217,17 @@ detect_vmx_features(void)
 	report_capability(procbased, 22, lo, hi);
     pr_info("\n");    
 
-    if((hi >> 31) && 1)
+    if (hi & (1 << 31))
+    {        
+        canSetSecondaryProcBasedControls = true;
+    }
+
+    if (hi & (1 << 17))
+    {
+        canSetTertiaryProcBasedControls = true;
+    }
+
+    if(canSetSecondaryProcBasedControls)
     {
         /* Secondary Procbased controls */
         rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
@@ -224,8 +236,8 @@ detect_vmx_features(void)
         report_capability(secondary_procbased, 27, lo, hi);
         pr_info("\n");
     }
-
-    if((hi >> 17) && 1)
+    
+    if(canSetTertiaryProcBasedControls)
     {
         /* Tertiary Procbased controls */
         rdmsr(IA32_VMX_PROCBASED_CTLS3, lo, hi);
@@ -233,7 +245,7 @@ detect_vmx_features(void)
             (uint64_t)(lo | (uint64_t)hi << 32));
         report_capability(tertiary_procbased, 4, lo, hi);
         pr_info("\n");
-    }
+    }    
 
     /* Exit controls */
 	rdmsr(IA32_VMX_EXIT_CTLS, lo, hi);
